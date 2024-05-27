@@ -13,9 +13,9 @@ namespace TimeTrackingApp.Data
     }
     public DbSet<User> User { get; set; } = default!;
 
-    public DbSet<Questions> Questions { get; set; } = default!;
+    public DbSet<Status> Status { get; set; } = default!;
 
-    public DbSet<Answers> Answers { get; set; } = default!;
+    public DbSet<Priority> Priority { get; set; } = default!;
     
     }
     

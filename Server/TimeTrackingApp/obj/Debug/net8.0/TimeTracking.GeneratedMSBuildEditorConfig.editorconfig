@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = TimeTracking
-build_property.ProjectDir = C:\Users\bbdnet2625\Documents\GRAD20224\Security\Time Track\Server\TimeTrackingApp\
+build_property.ProjectDir = C:\Users\bbdnet2625\Documents\GRAD20224\Security\Time Track\Backend\Server\TimeTrackingApp\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Xgo4C08aUJ2GsgxF8ZXsIASWYa7QjF5NePeX5aHJ2iN9SJjAO0AMU912E8OYZDggXU+4JdozX+VCGNv9xsOzTQ==",
+  "dgSpecHash": "PkCGXgDnx2EJjm8k8gQsAErRu0Mif6qgRs5sSH2yk5HJ/j6nhzQCUz0gVEP3HLbFzfWykFwLpBJ4XMof3CSvEw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\Security\\Time Track\\Server\\TimeTrackingApp\\TimeTracking.csproj",
+  "projectFilePath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\Security\\Time Track\\Backend\\Server\\TimeTrackingApp\\TimeTracking.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bbdnet2625\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\bbdnet2625\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
