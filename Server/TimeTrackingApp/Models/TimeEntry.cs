@@ -13,7 +13,7 @@ namespace TimeTrackingApp.Model
         [Column("TimeEntryID")]
         public int TimeEntryId{get;set;}
 
-       [Column("TaskID")]
+        [ForeignKey("TaskID")]
         public int TaskID{get;set;}
 
         [Column("Notes")]

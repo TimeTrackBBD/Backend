@@ -13,10 +13,10 @@ namespace TimeTrackingApp.Model
         [Column("UserProjectID")]
         public int UserProjectId{get;set;}
        
-        [Column("UserID")]
+        [ForeignKey("UserID")]
         public int UserID{get;set;}
 
-        [Column("ProjectID")]
+        [ForeignKey("ProjectID")]
         public int ProjectID{get;set;}
 
         [Column("StartDate")]

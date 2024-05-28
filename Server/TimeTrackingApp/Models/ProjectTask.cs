@@ -13,16 +13,16 @@ namespace TimeTrackingApp.Model
         [Column("ProjectTaskID")]
         public int ProjectTaskId{get;set;}
 
-        [Column("ProjectID")]
+        [ForeignKey("ProjectID")]
         public int ProjectID{get;set;}
 
-        [Column("TaskID")]
+        [ForeignKey("TaskID")]
         public int UserID{get;set;}
 
-        [Column("StatusID")]
+        [ForeignKey("StatusID")]
         public int StatusID{get;set;}
  
-        [Column("PriorityID")]
+        [ForeignKey("PriorityID")]
         public int PriorityID{get;set;}
     }
 
