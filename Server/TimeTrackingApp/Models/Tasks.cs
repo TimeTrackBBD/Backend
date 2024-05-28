@@ -6,19 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TimeTrackingApp.Model
 {
-    [Table("User")]
-    public class User {
+    [Table("Task")]
+    public class Tasks {
 
         [Key]
-        [Column("UserID")]
-        public int UserId{get;set;}
+        [Column("TaskID")]
+        public int TaskID{get;set;}
 
-        [Column("UserName")]
-        public required string UserName {get;set;}
+        [Column("TaskName")]
+        public required string TaskName {get;set;}
 
-        [Column("Email")]
-
-        public required string Email{get;set;}
+        [Column("Description")]
+        public required string Description{get;set;}
 
     }
 

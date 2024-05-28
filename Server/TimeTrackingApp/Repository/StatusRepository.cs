@@ -48,8 +48,7 @@ namespace TimeTrackingApp.Repository
             context.Update(status);
             return Save();
         }
-
-   
+  
         public bool Save()
         {
             var saved = context.SaveChanges();

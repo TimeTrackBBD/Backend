@@ -10,43 +10,43 @@ namespace TimeTrackingApp.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class StatusController : Controller
+    public class UserProjectController : Controller
     {
 
-        private readonly IStatusRepository statusRepository;
+        private readonly IUserProjectRepository userProjectRepository;
 
-        public StatusController(IStatusRepository statusRepository)
+        public UserProjectController(IUserProjectRepository userProjectRepository)
         {
-            this.statusRepository = statusRepository;
+            this.userProjectRepository = userProjectRepository;
         }
         
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Status>))]
-        public IActionResult GetStatuses()
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UserProject>))]
+        public IActionResult GetUserProjects()
         {
-            var status = statusRepository.GetStatuses();
+            var userProjects = userProjectRepository.GetUserProjects();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(status);
+            return Ok(userProjects);
         }
 
-        [HttpGet("{StatusID}")]
-        [ProducesResponseType(200, Type = typeof(Status))]
+        [HttpGet("{UserProjectID}")]
+        [ProducesResponseType(200, Type = typeof(UserProject))]
         [ProducesResponseType(400)]
-        public IActionResult GetStatus(int statusId)
+        public IActionResult GetUserProject(int userProjectId)
       {
         try
         {
-            if (!statusRepository.StatusExists(statusId))
+            if (!userProjectRepository.UserProjectExists(userProjectId))
             {
                 return NotFound();
             }
 
-            var status = statusRepository.GetStatus(statusId);
+            var userProject = userProjectRepository.GetUserProject(userProjectId);
 
-            if (status == null)
+            if (userProject == null)
             {
                 return NotFound(); 
             }
@@ -56,7 +56,7 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(status);
+            return Ok(userProject);
         }
         catch (Exception ex)
         {
@@ -66,24 +66,25 @@ namespace TimeTrackingApp.Controllers
         }
       }
 
+
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-       public IActionResult CreateStatus([FromBody] Status createStatus)
+       public IActionResult CreateUserProject([FromBody] UserProject createUserProject)
     {
         try
         {
-            if (createStatus == null)
+            if (createUserProject == null)
             {
-                return BadRequest("Status data is null.");
+                return BadRequest("User data is null.");
             }
 
-            var existingStatus = statusRepository.GetStatuses()
-                .FirstOrDefault(u => u.StatusName == createStatus.StatusName);
+            var existingUserProject = userProjectRepository.GetUserProjects()
+                .FirstOrDefault(u => u.UserProjectId == createUserProject.UserProjectId);
 
-            if (existingStatus != null)
+            if (existingUserProject != null)
             {
-                return Conflict("Status already exists."); 
+                return Conflict("UserProject already exists."); 
             }
 
             if (!ModelState.IsValid)
@@ -91,14 +92,14 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!statusRepository.CreateStatus(createStatus))
+            if (!userProjectRepository.CreateUserProject(createUserProject))
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
             }
 
-            var newStatus = statusRepository.GetStatus(createStatus.StatusId);
-            return Ok(newStatus);
+            var newUserProject = userProjectRepository.GetUserProject(createUserProject.UserProjectId);
+            return Ok(newUserProject);
         }
         catch (Exception ex)
         {
@@ -110,26 +111,26 @@ namespace TimeTrackingApp.Controllers
     }
 
 
-        [HttpPut("{StatusID}")]
+        [HttpPut("{UserProjectID}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateStatus(int statusId, [FromBody] Status updatedStatus)
+        public IActionResult UpdateUserProject(int userProjectId, [FromBody] UserProject updateUserProject)
     {
         try
         {
-            if (updatedStatus == null)
+            if (updateUserProject == null)
             {
-                return BadRequest("Updated status data is null.");
+                return BadRequest("Updated UserProject data is null.");
             }
 
-            if (statusId != updatedStatus.StatusId)
+            if (userProjectId != updateUserProject.UserProjectId)
             {
-                ModelState.AddModelError("", "Status id in the URL does not match the ID in the request body.");
+                ModelState.AddModelError("", "UserProject ID in the URL does not match the ID in the request body.");
                 return BadRequest(ModelState);
             }
 
-            if (!statusRepository.StatusExists(statusId))
+            if (!userProjectRepository.UserProjectExists(userProjectId))
             {
                 return NotFound();
             }
@@ -139,9 +140,9 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!statusRepository.UpdateStatus(updatedStatus))
+            if (!userProjectRepository.UpdateUserProject(updateUserProject))
             {
-                ModelState.AddModelError("", "Something went wrong updating the status.");
+                ModelState.AddModelError("", "Something went wrong updating the UserProject.");
                 return StatusCode(500, ModelState);
             }
 
@@ -156,23 +157,22 @@ namespace TimeTrackingApp.Controllers
         }
     }
 
-
-        [HttpDelete("{StatusID}")]
+        [HttpDelete("{UserProjectID}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-       public IActionResult DeleteStatus(int statusId)
+       public IActionResult DeleteUserProject(int userProjectId)
         {
             try
             {
-                if (!statusRepository.StatusExists(statusId))
+                if (!userProjectRepository.UserProjectExists(userProjectId))
                 {
                     return NotFound();
                 }
 
-                var statusToDelete = statusRepository.GetStatus(statusId);
+                var userProjectToDelete = userProjectRepository.GetUserProject(userProjectId);
 
-                if (statusToDelete == null)
+                if (userProjectToDelete == null)
                 {
                     return NotFound(); 
                 }
@@ -182,9 +182,9 @@ namespace TimeTrackingApp.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (!statusRepository.DeleteStatus(statusToDelete))
+                if (!userProjectRepository.DeleteUserProject(userProjectToDelete))
                 {
-                    ModelState.AddModelError("", "Something went wrong deleting the status.");
+                    ModelState.AddModelError("", "Something went wrong deleting the UserProject.");
                     return StatusCode(500, ModelState);
                 }
 

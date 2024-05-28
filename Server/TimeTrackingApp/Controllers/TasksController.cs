@@ -10,43 +10,43 @@ namespace TimeTrackingApp.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class StatusController : Controller
+    public class TasksController : Controller
     {
 
-        private readonly IStatusRepository statusRepository;
+        private readonly ITasksRepository taskRepository;
 
-        public StatusController(IStatusRepository statusRepository)
+        public TasksController(ITasksRepository taskRepository)
         {
-            this.statusRepository = statusRepository;
+            this.taskRepository = taskRepository;
         }
         
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Status>))]
-        public IActionResult GetStatuses()
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Tasks>))]
+        public IActionResult GetTasks()
         {
-            var status = statusRepository.GetStatuses();
+            var tasks = taskRepository.GetTasks();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(status);
+            return Ok(tasks);
         }
 
-        [HttpGet("{StatusID}")]
-        [ProducesResponseType(200, Type = typeof(Status))]
+        [HttpGet("{TaskID}")]
+        [ProducesResponseType(200, Type = typeof(Tasks))]
         [ProducesResponseType(400)]
-        public IActionResult GetStatus(int statusId)
+        public IActionResult GetTask(int taskId)
       {
         try
         {
-            if (!statusRepository.StatusExists(statusId))
+            if (!taskRepository.TaskExists(taskId))
             {
                 return NotFound();
             }
 
-            var status = statusRepository.GetStatus(statusId);
+            var task = taskRepository.GetTask(taskId);
 
-            if (status == null)
+            if (task == null)
             {
                 return NotFound(); 
             }
@@ -56,7 +56,7 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(status);
+            return Ok(task);
         }
         catch (Exception ex)
         {
@@ -69,21 +69,21 @@ namespace TimeTrackingApp.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-       public IActionResult CreateStatus([FromBody] Status createStatus)
+       public IActionResult CreateTask([FromBody] Tasks createTask)
     {
         try
         {
-            if (createStatus == null)
+            if (createTask == null)
             {
-                return BadRequest("Status data is null.");
+                return BadRequest("Task data is null.");
             }
 
-            var existingStatus = statusRepository.GetStatuses()
-                .FirstOrDefault(u => u.StatusName == createStatus.StatusName);
+            var existingTask = taskRepository.GetTasks()
+                .FirstOrDefault(u => u.TaskName == createTask.TaskName);
 
-            if (existingStatus != null)
+            if (existingTask != null)
             {
-                return Conflict("Status already exists."); 
+                return Conflict("Task already exists."); 
             }
 
             if (!ModelState.IsValid)
@@ -91,14 +91,14 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!statusRepository.CreateStatus(createStatus))
+            if (!taskRepository.CreateTask(createTask))
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
             }
 
-            var newStatus = statusRepository.GetStatus(createStatus.StatusId);
-            return Ok(newStatus);
+            var newTask = taskRepository.GetTask(createTask.TaskID);
+            return Ok(newTask);
         }
         catch (Exception ex)
         {
@@ -109,27 +109,26 @@ namespace TimeTrackingApp.Controllers
         }
     }
 
-
-        [HttpPut("{StatusID}")]
+        [HttpPut("{TaskID}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateStatus(int statusId, [FromBody] Status updatedStatus)
+        public IActionResult UpdateTask(int taskId, [FromBody] Tasks UpdateTask)
     {
         try
         {
-            if (updatedStatus == null)
+            if (UpdateTask == null)
             {
-                return BadRequest("Updated status data is null.");
+                return BadRequest("Updated task data is null.");
             }
 
-            if (statusId != updatedStatus.StatusId)
+            if (taskId != UpdateTask.TaskID)
             {
-                ModelState.AddModelError("", "Status id in the URL does not match the ID in the request body.");
+                ModelState.AddModelError("", "Task ID in the URL does not match the ID in the request body.");
                 return BadRequest(ModelState);
             }
 
-            if (!statusRepository.StatusExists(statusId))
+            if (!taskRepository.TaskExists(taskId))
             {
                 return NotFound();
             }
@@ -139,9 +138,9 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!statusRepository.UpdateStatus(updatedStatus))
+            if (!taskRepository.UpdateTask(UpdateTask))
             {
-                ModelState.AddModelError("", "Something went wrong updating the status.");
+                ModelState.AddModelError("", "Something went wrong updating the task.");
                 return StatusCode(500, ModelState);
             }
 
@@ -156,23 +155,22 @@ namespace TimeTrackingApp.Controllers
         }
     }
 
-
-        [HttpDelete("{StatusID}")]
+        [HttpDelete("{TaskID}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-       public IActionResult DeleteStatus(int statusId)
+       public IActionResult DeleteTask(int taskId)
         {
             try
             {
-                if (!statusRepository.StatusExists(statusId))
+                if (!taskRepository.TaskExists(taskId))
                 {
                     return NotFound();
                 }
 
-                var statusToDelete = statusRepository.GetStatus(statusId);
+                var taskToDelete = taskRepository.GetTask(taskId);
 
-                if (statusToDelete == null)
+                if (taskToDelete == null)
                 {
                     return NotFound(); 
                 }
@@ -182,9 +180,9 @@ namespace TimeTrackingApp.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (!statusRepository.DeleteStatus(statusToDelete))
+                if (!taskRepository.DeleteTask(taskToDelete))
                 {
-                    ModelState.AddModelError("", "Something went wrong deleting the status.");
+                    ModelState.AddModelError("", "Something went wrong deleting the task.");
                     return StatusCode(500, ModelState);
                 }
 

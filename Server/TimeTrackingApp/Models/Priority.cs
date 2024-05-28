@@ -12,7 +12,6 @@ namespace TimeTrackingApp.Model
         [Key]
         [Column("PriorityID")]
         public int PriorityId{get;set;}
-
         [Column("PriorityName")]
         public required string PriorityName {get;set;}
     }
