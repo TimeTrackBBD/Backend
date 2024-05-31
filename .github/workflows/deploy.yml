@@ -1,0 +1,37 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2
+
+      - name: 🔧 Build and publish .NET application
+        working-directory: ./Backend
+        run: dotnet publish -c Release
+
+      - name: 📁 Create deployment archive
+        working-directory: ./Backend
+        run: tar -czvf deploy.tar.gz DadJokeAPI/bin/Release/net8.0/publish/
+
+      - name: 📡 Deploy to EC2 using SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_INSTANCE_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./Backend/deploy.tar.gz"
+          target: /home/ubuntu/TimeTracksAPI
+
+      - name: ☁️ Run deployment script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_INSTANCE_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: ./TimeTrackAPI/run.sh
