@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TF_VAR_AWS_REGION: ${{ secrets.AWS_REGION }}
-      PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+      TF_VAR_public_key: ${{ secrets.PUBLIC_KEY }}
     defaults:
       run:
         shell: bash
@@ -52,7 +52,3 @@ jobs:
         id: apply
         run: terraform apply .tfplan
 
-      - name: Save RDS Endpoint
-        id: save_rds_endpoint
-        run: |
-          echo "::set-output name=rds_endpoint::$(terraform output -json rds_endpoint)"
