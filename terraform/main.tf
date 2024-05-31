@@ -69,7 +69,3 @@ resource "aws_instance" "dj_api" {
     created-using = "terraform"
   }
 }
-eron.worthington@bbd.co.za"
-    created-using = "terraform"
-  }
-}
