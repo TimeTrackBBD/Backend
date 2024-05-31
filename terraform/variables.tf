@@ -15,11 +15,6 @@ variable "ec2_sg" {
   default = ["sg-008fecdc0471fe360"] //
 }
 
-variable "public_key" {
-  description = "Public key for SSH"
-  type = string
-  sensitive = true
-}
 
 variable "ec2_subnet_id" {
   default = "subnet-09aea05f4ab73bc68" //
