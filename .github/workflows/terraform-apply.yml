@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TF_VAR_AWS_REGION: ${{ secrets.AWS_REGION }}
-      TF_VAR_PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+      PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
     defaults:
       run:
         shell: bash
