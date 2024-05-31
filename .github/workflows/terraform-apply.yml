@@ -17,8 +17,6 @@ jobs:
   deploy-infrastructure:
     runs-on: ubuntu-latest
     env:
-      TF_VAR_DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      TF_VAR_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       TF_VAR_AWS_REGION: ${{ secrets.AWS_REGION }}
     defaults:
       run:

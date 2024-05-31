@@ -10,13 +10,11 @@ jobs:
   destroy-infrastructure:
     runs-on: ubuntu-latest
     env:
-      TF_VAR_DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      TF_VAR_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       TF_VAR_AWS_REGION: ${{ secrets.AWS_REGION }}
     defaults:
       run:
         shell: bash
-        working-directory: DB/infrastructure
+        working-directory: terraform
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
