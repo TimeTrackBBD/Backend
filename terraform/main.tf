@@ -12,16 +12,6 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-resource "aws_key_pair" "dj_kp" {
-  key_name = "dj_kp"
-  public_key = var.public_key
-
-  tags = {
-    name = "dj_kp"
-    owner = "cameron.worthington@bbd.co.za"
-    created-using = "terraform"
-  }
-}
 
 data "template_file" "user_data" {
   template = file("install-dotnet.sh")
@@ -31,7 +21,7 @@ resource "aws_instance" "dj_api" {
   ami = var.ec2_ami
   count = var.ec2_count
   instance_type = var.ec2_instance_type
-  key_name = aws_key_pair.dj_kp.key_name
+  key_name = aws_key_pair.time-track-backend.key_name
   security_groups = [element(var.ec2_sg, count.index)]
   subnet_id = var.ec2_subnet_id
 
