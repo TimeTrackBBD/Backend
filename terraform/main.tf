@@ -14,6 +14,7 @@ provider "aws" {
 
 resource "aws_key_pair" "dj_kp" {
   key_name = "dj_kp"
+  public_key = var.public_key
 
   tags = {
     name = "dj_kp"
@@ -65,6 +66,10 @@ resource "aws_instance" "dj_api" {
   tags = {
     Name = "dj_api"
     owner = "cameron.worthington@bbd.co.za"
+    created-using = "terraform"
+  }
+}
+eron.worthington@bbd.co.za"
     created-using = "terraform"
   }
 }
