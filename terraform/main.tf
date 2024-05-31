@@ -21,7 +21,7 @@ resource "aws_instance" "dj_api" {
   ami = var.ec2_ami
   count = var.ec2_count
   instance_type = var.ec2_instance_type
-  key_name = time-track-backend.key_name
+  key_name = aws_key_pair.time-track-backend.key_name
   security_groups = [element(var.ec2_sg, count.index)]
   subnet_id = var.ec2_subnet_id
 
