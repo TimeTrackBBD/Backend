@@ -69,23 +69,3 @@ resource "aws_instance" "dj_api" {
     created-using = "terraform"
   }
 }
-
-resource "aws_db_instance" "dj_db" {
-  allocated_storage      = var.ec2_db_storage
-  storage_type           = var.ec2_db_storage_type
-  identifier             = var.ec2_db_identifier
-  engine                 = var.ec2_db_engine
-  engine_version         = var.ec2_db_version
-  instance_class         = var.ec2_db_instance_class
-  username               = var.ec2_db_user
-  password               = var.ec2_db_password
-  publicly_accessible    = true
-  skip_final_snapshot    = true
-  vpc_security_group_ids = ["${var.ec2_db_vpc_security_group_id}"]
-
-  tags = {
-    Name = "dj_db"
-    owner = "cameron.worthington@bbd.co.za"
-    created-using = "terraform"
-  }
-}
