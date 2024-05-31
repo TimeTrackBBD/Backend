@@ -14,7 +14,6 @@ provider "aws" {
 
 resource "aws_key_pair" "dj_kp" {
   key_name = "dj_kp"
-  public_key = var.public_key
 
   tags = {
     name = "dj_kp"
