@@ -17,13 +17,13 @@ public partial class TimeTrackDbContext : DbContext
 
     public virtual DbSet<FlywaySchemaHistory> FlywaySchemaHistories { get; set; }
 
-    public virtual DbSet<Priority> Priorities { get; set; }
+    public DbSet<Priority> Priorities { get; set; }
 
-    public virtual DbSet<Project> Projects { get; set; }
+    public DbSet<Project> Projects { get; set; }
 
-    public virtual DbSet<Tasks> Tasks { get; set; }
+    public DbSet<Tasks> Tasks { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -86,11 +86,6 @@ public partial class TimeTrackDbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.ProjectName).HasMaxLength(100);
             entity.Property(e => e.UserId).HasColumnName("UserID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Projects)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Project_UserID_fkey");
         });
 
         modelBuilder.Entity<Tasks>(entity =>
@@ -104,16 +99,6 @@ public partial class TimeTrackDbContext : DbContext
             entity.Property(e => e.PriorityId).HasColumnName("PriorityID");
             entity.Property(e => e.ProjectId).HasColumnName("ProjectID");
             entity.Property(e => e.TaskName).HasMaxLength(100);
-
-            entity.HasOne(d => d.Priority).WithMany(p => p.Tasks)
-                .HasForeignKey(d => d.PriorityId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Task_PriorityID_fkey");
-
-            entity.HasOne(d => d.Project).WithMany(p => p.Tasks)
-                .HasForeignKey(d => d.ProjectId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Task_ProjectID_fkey");
         });
 
         modelBuilder.Entity<User>(entity =>

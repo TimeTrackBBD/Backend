@@ -13,7 +13,4 @@ public partial class Project
 
     public string Description { get; set; } = null!;
 
-    public virtual ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
-
-    public virtual User User { get; set; } = null!;
 }

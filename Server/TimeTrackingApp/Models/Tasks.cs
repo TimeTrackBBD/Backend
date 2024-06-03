@@ -16,8 +16,4 @@ public partial class Tasks
     public string Description { get; set; } = null!;
 
     public int? Duration { get; set; }
-
-    public virtual Priority Priority { get; set; } = null!;
-
-    public virtual Project Project { get; set; } = null!;
 }

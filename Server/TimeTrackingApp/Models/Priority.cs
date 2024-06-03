@@ -9,5 +9,4 @@ public partial class Priority
 
     public string PriorityName { get; set; } = null!;
 
-    public virtual ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
 }
