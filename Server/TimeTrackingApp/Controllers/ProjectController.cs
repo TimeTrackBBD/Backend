@@ -1,9 +1,7 @@
-using TimeTrackingApp.Model;
-using TimeTrackingApp.Data;
-//using TimeTrackingApp.Dto;
+using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using TimeTrackingApp.Repository;
-using TimeTrackingApp.Interface;
+using TimeTrackingApp.Interfaces;
 
 namespace TimeTrackingApp.Controllers
 {
@@ -201,5 +199,3 @@ namespace TimeTrackingApp.Controllers
 
     }
 }
-
-

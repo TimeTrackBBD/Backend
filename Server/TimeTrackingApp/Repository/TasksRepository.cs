@@ -1,7 +1,5 @@
-using TimeTrackingApp.Data;
-using TimeTrackingApp.Interface;
-using TimeTrackingApp.Model;
-//using TimeTrackingApp.Dto;
+using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TimeTrackingApp.Repository
@@ -9,15 +7,15 @@ namespace TimeTrackingApp.Repository
     public class TasksRepository : ITasksRepository
 
     {
-        private readonly DataContext context;
+        private readonly TimeTrackDbContext context;
 
-        public TasksRepository(DataContext context)
+        public TasksRepository(TimeTrackDbContext context)
         {
             this.context = context;
         }
         public bool TaskExists(int taskId)
         {
-            return context.Tasks.Any(u => u.TaskID == taskId);
+            return context.Tasks.Any(u => u.TaskId == taskId);
         }
         public bool CreateTask(Tasks task)
         {
@@ -38,7 +36,7 @@ namespace TimeTrackingApp.Repository
         }
         public  Tasks GetTask(int taskId)
         {   
-            return context.Tasks.Where(u => u.TaskID == taskId).FirstOrDefault();
+            return context.Tasks.Where(u => u.TaskId == taskId).FirstOrDefault();
         }
         public bool UpdateTask(Tasks task)
         {

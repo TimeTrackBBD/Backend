@@ -1,7 +1,5 @@
-using TimeTrackingApp.Data;
-using TimeTrackingApp.Interface;
-using TimeTrackingApp.Model;
-//using TimeTrackingApp.Dto;
+using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TimeTrackingApp.Repository
@@ -9,15 +7,15 @@ namespace TimeTrackingApp.Repository
     public class PriorityRepository : IPriorityRepository
 
     {
-        private readonly DataContext context;
+        private readonly TimeTrackDbContext context;
 
-        public PriorityRepository(DataContext context)
+        public PriorityRepository(TimeTrackDbContext context)
         {
             this.context = context;
         }
         public bool PriorityExists(int priorityId)
         {
-            return context.Priority.Any(u => u.PriorityId == priorityId);
+            return context.Priorities.Any(u => u.PriorityId == priorityId);
         }
 
         public bool CreatePriority(Priority priority)
@@ -35,13 +33,13 @@ namespace TimeTrackingApp.Repository
 
         public ICollection<Priority> GetPriorities()
         {
-            return context.Priority.ToList();
+            return context.Priorities.ToList();
         }
 
         public Priority GetPriority(int priorityId)
         {
             
-            return context.Priority.Where(u => u.PriorityId == priorityId).FirstOrDefault();
+            return context.Priorities.Where(u => u.PriorityId == priorityId).FirstOrDefault();
         }
         public bool UpdatePriority(Priority priority)
         {

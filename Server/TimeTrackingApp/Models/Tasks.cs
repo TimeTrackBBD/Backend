@@ -1,24 +1,23 @@
-using Microsoft.VisualBasic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 
-namespace TimeTrackingApp.Model
+namespace TimeTrackingApp.Models;
+
+public partial class Tasks
 {
-    [Table("Task")]
-    public class Tasks {
+    public int TaskId { get; set; }
 
-        [Key]
-        [Column("TaskID")]
-        public int TaskID{get;set;}
+    public int ProjectId { get; set; }
 
-        [Column("TaskName")]
-        public required string TaskName {get;set;}
+    public int PriorityId { get; set; }
 
-        [Column("Description")]
-        public required string Description{get;set;}
+    public string TaskName { get; set; } = null!;
 
-    }
+    public string Description { get; set; } = null!;
 
+    public int? Duration { get; set; }
+
+    public virtual Priority Priority { get; set; } = null!;
+
+    public virtual Project Project { get; set; } = null!;
 }

@@ -1,9 +1,7 @@
-using TimeTrackingApp.Model;
-using TimeTrackingApp.Data;
-//using TimeTrackingApp.Dto;
+using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using TimeTrackingApp.Repository;
-using TimeTrackingApp.Interface;
+using TimeTrackingApp.Interfaces;
 
 namespace TimeTrackingApp.Controllers
 {
@@ -21,7 +19,7 @@ namespace TimeTrackingApp.Controllers
         }
         
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Tasks>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Task>))]
         public IActionResult GetTasks()
         {
             var tasks = taskRepository.GetTasks();
@@ -97,7 +95,7 @@ namespace TimeTrackingApp.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            var newTask = taskRepository.GetTask(createTask.TaskID);
+            var newTask = taskRepository.GetTask(createTask.TaskId);
             return Ok(newTask);
         }
         catch (Exception ex)
@@ -122,7 +120,7 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest("Updated task data is null.");
             }
 
-            if (taskId != UpdateTask.TaskID)
+            if (taskId != UpdateTask.TaskId)
             {
                 ModelState.AddModelError("", "Task ID in the URL does not match the ID in the request body.");
                 return BadRequest(ModelState);

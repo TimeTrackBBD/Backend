@@ -1,46 +1,47 @@
-﻿// using Microsoft.EntityFrameworkCore;
-// using Microsoft.Extensions.DependencyInjection;
-// using TimeTrackingApp.Data;
-// using TimeTrackingApp.Interface;
-// using TimeTrackingApp.Repository;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using TimeTrackingApp.Models;
+using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Repository;
+using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 
-// var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-// builder.Services.AddControllers();
+builder.Services.AddControllers();
 
-// builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen();
-// var serverName = Environment.GetEnvironmentVariable("SERVER_NAME")?.ToString();
-// var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME")?.ToString();
-// var username = Environment.GetEnvironmentVariable("USERNAME")?.ToString();
-// var password = Environment.GetEnvironmentVariable("PASSWORD")?.ToString();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// var connectionString = "Server="+serverName+";Port=5432;Database="+databaseName+";Username="+username+";Password="+password;
+builder.Services.AddDbContext<TimeTrackDbContext>(options =>
+{
+    options.UseNpgsql(connectionString ??
+        throw new InvalidOperationException("Connection String not found or invalid"));
+});
 
-// builder.Services.AddDbContext<DataContext>(options =>
-// {
-//     options.UseNpgsql(connectionString ??
-//         throw new InvalidOperationException("Connection String not found or invalid"));
-// });
+// Register repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITasksRepository, TasksRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IPriorityRepository, PriorityRepository>();
 
-// builder.Services.AddScoped<IUserRepository, UserRepository>();
-// //builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
-// //builder.Services.AddScoped<IQuestionsRepository, QuestionsRepository>();
+// Configure Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+});
 
-// var app = builder.Build();
+var app = builder.Build();
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+});
+app.UseHttpsRedirection();
+app.UseAuthorization();
 
-// if (app.Environment.IsDevelopment())
-// {
-//     app.UseSwagger();
-//     app.UseSwaggerUI();
-// }
+app.MapControllers();
 
-// app.UseHttpsRedirection();
-
-// app.UseAuthorization();
-
-// app.MapControllers();
-
-// app.Run();
+app.Run();
 
 Console.WriteLine("Hello, World!");

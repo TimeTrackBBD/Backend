@@ -1,7 +1,5 @@
-using TimeTrackingApp.Data;
-using TimeTrackingApp.Interface;
-using TimeTrackingApp.Model;
-//using TimeTrackingApp.Dto;
+using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TimeTrackingApp.Repository
@@ -9,15 +7,15 @@ namespace TimeTrackingApp.Repository
     public class ProjectRepository : IProjectRepository
 
     {
-        private readonly DataContext context;
+        private readonly TimeTrackDbContext context;
 
-        public ProjectRepository(DataContext context)
+        public ProjectRepository(TimeTrackDbContext context)
         {
             this.context = context;
         }
         public bool ProjectExists(int projectId)
         {
-            return context.Project.Any(u => u.ProjectId == projectId);
+            return context.Projects.Any(u => u.ProjectId == projectId);
         }
         public bool CreateProject(Project project)
         {
@@ -34,11 +32,11 @@ namespace TimeTrackingApp.Repository
 
         public ICollection<Project> GetProjects()
         {
-            return context.Project.ToList();
+            return context.Projects.ToList();
         }
         public  Project GetProject(int projectId)
         {   
-            return context.Project.Where(u => u.ProjectId == projectId).FirstOrDefault();
+            return context.Projects.Where(u => u.ProjectId == projectId).FirstOrDefault();
         }
         public bool UpdateProject(Project project)
         {

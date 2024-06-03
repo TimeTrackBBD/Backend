@@ -1,7 +1,6 @@
-using TimeTrackingApp.Data;
-using TimeTrackingApp.Interface;
-using TimeTrackingApp.Model;
-//using TimeTrackingApp.Dto;
+using System;
+using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TimeTrackingApp.Repository
@@ -9,40 +8,47 @@ namespace TimeTrackingApp.Repository
     public class UserRepository : IUserRepository
 
     {
-        private readonly DataContext context;
+        private readonly TimeTrackDbContext context;
 
-        public UserRepository(DataContext context)
+        public UserRepository(TimeTrackDbContext context)
         {
             this.context = context;
         }
         public bool UserExists(int userId)
         {
-            return context.User.Any(u => u.UserId == userId);
+            return context.Users.Any(u => u.UserId == userId);
         }
 
-        public bool CreateUser(User user)
+        public bool CreateUser(User users)
         {
-            context.Add(user);
+            context.Add(users);
             return Save();
         }
 
-        public bool DeleteUser(User user)
+        public bool DeleteUser(User users)
         {
 
-            context.Remove(user);
+            context.Remove(users);
             return Save();
         }
 
         public ICollection<User> GetUsers()
         {
-            return context.User.ToList();
+            return context.Users.ToList();
         }
 
-        public User GetUser(int userId)
+        public User? GetUser(int userId)
         {
-            
-            return context.User.Where(u => u.UserId == userId).FirstOrDefault();
+            var user = context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+            {
+                // Handle the case when the user is not found, e.g., log the information or throw an exception
+                // For this example, we'll just log the information
+                Console.WriteLine($"User with ID {userId} not found.");
+            }
+            return user;
         }
+
 
         public bool Save()
         {
@@ -50,9 +56,9 @@ namespace TimeTrackingApp.Repository
             return saved > 0;
         }
 
-        public bool UpdateUser(User user)
+        public bool UpdateUser(User users)
         {
-            context.Update(user);
+            context.Update(users);
             return Save();
         }
     }
