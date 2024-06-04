@@ -29,7 +29,9 @@ jobs:
         run: dotnet publish --configuration Release --output ./build TimeTrackingApp/TimeTrackingApp.csproj
 
       - name: Zip the build
-        run: zip -r build.zip ./build
+        run: |
+          cd build
+          zip -r ../build.zip .
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
