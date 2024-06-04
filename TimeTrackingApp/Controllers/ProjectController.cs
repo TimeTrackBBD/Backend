@@ -64,6 +64,40 @@ namespace TimeTrackingApp.Controllers
         }
       }
 
+        [HttpGet("{ProjectID}/tasks")]
+        [ProducesResponseType(200, Type = typeof(Project))]
+        [ProducesResponseType(400)]
+        public IActionResult GetProjectTasks(int projectId)
+        {
+            try
+            {
+                if (!projectRepository.ProjectExists(projectId))
+                {
+                    return NotFound();
+                }
+
+                var tasks = projectRepository.GetTasks(projectId);
+
+                if (tasks == null)
+                {
+                    return NotFound();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                return Ok(tasks);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
+
 
         [HttpPost]
         [ProducesResponseType(204)]

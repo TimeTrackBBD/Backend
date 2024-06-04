@@ -6,6 +6,7 @@ namespace TimeTrackingApp.Interfaces
     {
         ICollection<Project> GetProjects();
         Project GetProject(int projectId);
+        Tasks[] GetTasks(int projectId);
         bool ProjectExists(int projectId);
         bool CreateProject(Project project); 
         bool UpdateProject(Project project);

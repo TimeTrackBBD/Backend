@@ -6,6 +6,7 @@ namespace TimeTrackingApp.Interfaces
     {
         ICollection<User> GetUsers();
         User? GetUser(int userId);
+        Project[]? GetProjects(int userId);
         bool UserExists(int userId);
         bool CreateUser(User users); 
         bool UpdateUser(User users);
