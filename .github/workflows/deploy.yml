@@ -1,37 +1,43 @@
-name: Deploy
+name: Deploy API to AWS Elastic Beanstalk Environment
+
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
 jobs:
-  build:
-    name: 🎉 Deploy
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 🚚 Get latest code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: 🔧 Build and publish .NET application
-        working-directory: ./Backend
-        run: dotnet publish -c Release
-
-      - name: 📁 Create deployment archive
-        working-directory: ./Backend
-        run: tar -czvf deploy.tar.gz DadJokeAPI/bin/Release/net8.0/publish/
-
-      - name: 📡 Deploy to EC2 using SSH
-        uses: appleboy/scp-action@v0.1.7
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
         with:
-          host: ${{ secrets.EC2_INSTANCE_IP }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./Backend/deploy.tar.gz"
-          target: /home/ubuntu/TimeTracksAPI
+          dotnet-version: "8.0"
 
-      - name: ☁️ Run deployment script
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Restore dependencies
+        run: dotnet restore TimeTrackingApp/TimeTrackingApp.csproj
+
+      - name: Build the project
+        run: dotnet build --configuration Release TimeTrackingApp/TimeTrackingApp.csproj
+
+      - name: Publish the project
+        run: dotnet publish --configuration Release --output ./build TimeTrackingApp/TimeTrackingApp.csproj
+
+      - name: Zip the build
+        run: zip -r build.zip ./build
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v21
         with:
-          host: ${{ secrets.EC2_INSTANCE_IP }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: ./TimeTrackAPI/run.sh
+          aws_access_key: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          aws_secret_key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          application_name: TimeTrackAPI
+          environment_name: TimeTrackAPI-env
+          version_label: "app-${{ github.sha }}"
+          region: eu-west-1
+          deployment_package: build.zip

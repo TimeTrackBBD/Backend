@@ -38,6 +38,18 @@ namespace TimeTrackingApp.Repository
         {   
             return context.Projects.Where(u => u.ProjectId == projectId).FirstOrDefault();
         }
+
+        public Tasks[] GetTasks(int projectId)
+        {   
+            var tasks = context.Tasks.Where(p => p.ProjectId == projectId).ToArray();
+            if (tasks == null)
+            {
+                // Handle the case when the user is not found, e.g., log the information or throw an exception
+                // For this example, we'll just log the information
+                Console.WriteLine($"Task with project ID {projectId} not found.");
+            }
+            return tasks;        
+        }
         public bool UpdateProject(Project project)
         {
             context.Update(project);

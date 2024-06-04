@@ -49,6 +49,17 @@ namespace TimeTrackingApp.Repository
             return user;
         }
 
+        public Project[]? GetProjects(int userId)
+        {
+            var projects = context.Projects.Where(p => p.UserId == userId).ToArray();
+            if (projects == null)
+            {
+                // Handle the case when the user is not found, e.g., log the information or throw an exception
+                // For this example, we'll just log the information
+                Console.WriteLine($"Project with user ID {userId} not found.");
+            }
+            return projects;
+        }
 
         public bool Save()
         {
