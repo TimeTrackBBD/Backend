@@ -5,12 +5,14 @@ using TimeTrackingApp.Interfaces;
 using TimeTrackingApp.Repository;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using TimeTrackingApp.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string allowedHosts = Environment.GetEnvironmentVariable("ALLOWED_HOSTS");
+// Postgres context
+string connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
 
 builder.Services.AddDbContext<TimeTrackDbContext>(options =>
 {
@@ -27,7 +29,7 @@ builder.Services.AddScoped<IPriorityRepository, PriorityRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
-        builder.WithOrigins("https://timetrack.projects.bbdgrad.com/")
+        builder.WithOrigins(allowedHosts)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials() 
@@ -52,6 +54,7 @@ app.UseSwaggerUI(c =>
 app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
+app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
