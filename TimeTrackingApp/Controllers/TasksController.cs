@@ -20,18 +20,6 @@ namespace TimeTrackingApp.Controllers
             this.taskRepository = taskRepository;
             this.projectRepository = projectRepository;
         }
-        
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Task>))]
-        public IActionResult GetTasks()
-        {
-            var tasks = taskRepository.GetTasks();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return Ok(tasks);
-        }
 
         [HttpGet("{TaskID}")]
         [ProducesResponseType(200, Type = typeof(Tasks))]
@@ -39,15 +27,31 @@ namespace TimeTrackingApp.Controllers
         public IActionResult GetTask(int taskId)
       {
 
-         //TODO:REMOVE
-        try
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+
+            Tasks task = taskRepository.GetTask(taskId);
+            Project project = projectRepository.GetProject(task.ProjectId);
+            if (project == null)
+            {
+                return StatusCode(400, "Please enter a valid project id.");
+            }
+            if (project.UserId != userId)
+            {
+                return StatusCode(401, "Unauthorised.");
+            }
+            try
         {
             if (!taskRepository.TaskExists(taskId))
             {
                 return NotFound();
             }
-
-            var task = taskRepository.GetTask(taskId);
 
             if (task == null)
             {

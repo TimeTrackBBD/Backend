@@ -105,50 +105,6 @@ namespace TimeTrackingApp.Controllers
         }
 
 
-        [HttpPost]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-       public IActionResult CreateUser([FromBody] User createUser)
-    {
-            //TODO: REMOVE no longer need to create users with api endpoint
-            try
-        {
-            if (createUser == null)
-            {
-                return BadRequest("User data is null.");
-            }
-
-            var existingUser = userRepository.GetUsers()
-                .FirstOrDefault(u => u.UserName == createUser.UserName);
-
-            if (existingUser != null)
-            {
-                return Conflict("User already exists."); 
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (userRepository.CreateUser(createUser).IsFailure)
-            {
-                ModelState.AddModelError("", "Something went wrong while saving.");
-                return StatusCode(500, ModelState);
-            }
-            //can get user from CreateUser function now instead of making another db call
-            var newUser = userRepository.GetUser(createUser.UserId);
-            return Ok(newUser);
-        }
-        catch (Exception ex)
-        {
-            
-            Console.WriteLine($"An error occurred: {ex.Message}");
-
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
 
         [HttpPut()]
         [ProducesResponseType(400)]
