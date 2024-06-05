@@ -45,14 +45,14 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+
+app.UseCors("AllowSpecificOrigin");
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Time Track API V1");
 });
-
-app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 app.UseMiddleware<AuthenticationMiddleware>();
