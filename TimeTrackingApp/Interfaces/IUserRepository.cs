@@ -1,4 +1,5 @@
 using  TimeTrackingApp.Models;
+using TimeTrackingApp.Results;
 
 namespace TimeTrackingApp.Interfaces
 {
@@ -6,9 +7,10 @@ namespace TimeTrackingApp.Interfaces
     {
         ICollection<User> GetUsers();
         User? GetUser(int userId);
+        Result<User> GetUserByUserName(string userName);
         Project[]? GetProjects(int userId);
         bool UserExists(int userId);
-        bool CreateUser(User users); 
+        Result<User> CreateUser(User users); 
         bool UpdateUser(User users);
         bool DeleteUser(User users);
         bool Save();

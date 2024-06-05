@@ -2,6 +2,7 @@ using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using TimeTrackingApp.Repository;
 using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Results;
 
 namespace TimeTrackingApp.Controllers
 {
@@ -18,24 +19,22 @@ namespace TimeTrackingApp.Controllers
             this.projectRepository = projectRepository;
         }
         
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Project>))]
-        public IActionResult GetProjects()
-        {
-            var projects = projectRepository.GetProjects();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return Ok(projects);
-        }
 
         [HttpGet("{ProjectID}")]
         [ProducesResponseType(200, Type = typeof(Project))]
         [ProducesResponseType(400)]
         public IActionResult GetProject(int projectId)
       {
-        try
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+
+            try
         {
             if (!projectRepository.ProjectExists(projectId))
             {
@@ -47,6 +46,10 @@ namespace TimeTrackingApp.Controllers
             if (project == null)
             {
                 return NotFound(); 
+            }
+            if (project.UserId != userId) 
+            {
+                return StatusCode(401, "Unauthorised.");
             }
 
             if (!ModelState.IsValid)
@@ -69,13 +72,24 @@ namespace TimeTrackingApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetProjectTasks(int projectId)
         {
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
             try
             {
                 if (!projectRepository.ProjectExists(projectId))
                 {
                     return NotFound();
                 }
-
+                if (projectRepository.GetProject(projectId).UserId != userId)
+                {
+                    return StatusCode(401, "Unauthorised.");
+                }
                 var tasks = projectRepository.GetTasks(projectId);
 
                 if (tasks == null)
@@ -104,7 +118,16 @@ namespace TimeTrackingApp.Controllers
         [ProducesResponseType(400)]
        public IActionResult CreateProject([FromBody] Project createProject)
     {
-        try
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+            createProject.UserId = userId;
+            try
         {
             if (createProject == null)
             {
@@ -112,11 +135,11 @@ namespace TimeTrackingApp.Controllers
             }
 
             var existingProject = projectRepository.GetProjects()
-                .FirstOrDefault(u => u.ProjectName == createProject.ProjectName);
+                .FirstOrDefault(u => (u.ProjectName == createProject.ProjectName && u.UserId==userId));
 
             if (existingProject != null)
             {
-                return Conflict("Project already exists."); 
+                return Conflict("Project already exists for this user."); 
             }
 
             if (!ModelState.IsValid)
@@ -143,25 +166,38 @@ namespace TimeTrackingApp.Controllers
     }
 
 
-        [HttpPut("{ProjectID}")]
+        [HttpPatch("{ProjectID}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult UpdateProject(int projectId, [FromBody] Project UpdateProject)
     {
-        try
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+            
+            try
         {
             if (UpdateProject == null)
             {
                 return BadRequest("Updated project data is null.");
             }
 
-            if (projectId != UpdateProject.ProjectId)
+            if (projectId != UpdateProject.ProjectId) //duplicate info - two sources of truth bad
             {
                 ModelState.AddModelError("", "Project ID in the URL does not match the ID in the request body.");
                 return BadRequest(ModelState);
             }
-
+            var project = projectRepository.GetProject(projectId);
+            if (project.UserId != userId)
+            {
+                return StatusCode(401, "Unauthorised.");
+            }
             if (!projectRepository.ProjectExists(projectId))
             {
                 return NotFound();
@@ -171,8 +207,9 @@ namespace TimeTrackingApp.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            if (!projectRepository.UpdateProject(UpdateProject))
+            project.Description = UpdateProject.Description;
+            project.ProjectName = UpdateProject.ProjectName;
+            if (!projectRepository.UpdateProject(project))
             {
                 ModelState.AddModelError("", "Something went wrong updating the project.");
                 return StatusCode(500, ModelState);
@@ -195,6 +232,16 @@ namespace TimeTrackingApp.Controllers
         [ProducesResponseType(404)]
        public IActionResult DeleteProject(int projectId)
         {
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+
+
             try
             {
                 if (!projectRepository.ProjectExists(projectId))
@@ -207,6 +254,10 @@ namespace TimeTrackingApp.Controllers
                 if (projectToDelete == null)
                 {
                     return NotFound(); 
+                }
+                if (projectToDelete.UserId == userId)
+                {
+                    return StatusCode(401, "Unauthorised.");
                 }
 
                 if (!ModelState.IsValid)
@@ -231,5 +282,14 @@ namespace TimeTrackingApp.Controllers
             }
         }
 
+        private Result<User> GetLoggedInUser()
+        {
+            var loggedInUser = HttpContext.Items["loggedInUser"] as User;
+
+            if (loggedInUser is null)
+                return Result.Fail<User>(new ValidationError("Could Not Determine Logged In User"));
+
+            return Result.Ok(loggedInUser);
+        }
     }
 }

@@ -2,6 +2,8 @@ using System;
 using TimeTrackingApp.Interfaces;
 using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TimeTrackingApp.Results;
 
 namespace TimeTrackingApp.Repository
 {
@@ -19,10 +21,15 @@ namespace TimeTrackingApp.Repository
             return context.Users.Any(u => u.UserId == userId);
         }
 
-        public bool CreateUser(User users)
+        public Result<User> CreateUser(User users)
         {
-            context.Add(users);
-            return Save();
+            User user = new User {
+                UserName = users.UserName,
+                Email = users.Email
+            };
+            context.Add(user);
+            context.SaveChanges();
+            return Result.Ok(user);
         }
 
         public bool DeleteUser(User users)
@@ -48,6 +55,16 @@ namespace TimeTrackingApp.Repository
             }
             return user;
         }
+        public Result<User> GetUserByUserName(string userName)
+        {
+            var user = context.Users.FirstOrDefault(user => user.UserName == userName);
+
+            if (user is null)
+                return Result.Fail<User>
+                    (new ValidationError("Username", "Username Does Not Link To An Existing User."));
+
+            return Result.Ok(user);
+        }
 
         public Project[]? GetProjects(int userId)
         {
@@ -69,7 +86,12 @@ namespace TimeTrackingApp.Repository
 
         public bool UpdateUser(User users)
         {
-            context.Update(users);
+            User user = new User
+            {
+                UserName = users.UserName,
+                Email = users.Email
+            };
+            context.Update(user);
             return Save();
         }
     }
