@@ -82,7 +82,7 @@ public partial class TimeTrackDbContext : DbContext
 
             entity.ToTable("Project");
 
-            entity.Property(e => e.ProjectId).HasColumnName("ProjectID");
+            entity.Property(e => e.ProjectId).HasColumnName("ProjectID").ValueGeneratedOnAdd();
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.ProjectName).HasMaxLength(100);
             entity.Property(e => e.UserId).HasColumnName("UserID");
@@ -94,7 +94,7 @@ public partial class TimeTrackDbContext : DbContext
 
             entity.ToTable("Task");
 
-            entity.Property(e => e.TaskId).HasColumnName("TaskID");
+            entity.Property(e => e.TaskId).HasColumnName("TaskID").ValueGeneratedOnAdd();
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.PriorityId).HasColumnName("PriorityID");
             entity.Property(e => e.ProjectId).HasColumnName("ProjectID");
@@ -106,8 +106,7 @@ public partial class TimeTrackDbContext : DbContext
             entity.HasKey(e => e.UserId).HasName("User_pkey");
 
             entity.ToTable("User");
-
-            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.UserId).HasColumnName("UserID").ValueGeneratedOnAdd();
             entity.Property(e => e.Email).HasMaxLength(350);
             entity.Property(e => e.UserName).HasMaxLength(100);
         });

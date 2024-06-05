@@ -6,6 +6,7 @@ using TimeTrackingApp.Repository;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using TimeTrackingApp.Middleware;
+using TimeTrackingApp.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IPriorityRepository, PriorityRepository>();
-
+builder.Services.AddTransient<UsersConverter>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>

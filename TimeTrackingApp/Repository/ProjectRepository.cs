@@ -1,6 +1,8 @@
 using TimeTrackingApp.Interfaces;
 using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TimeTrackingApp.Results;
 
 namespace TimeTrackingApp.Repository
 {
@@ -19,7 +21,14 @@ namespace TimeTrackingApp.Repository
         }
         public bool CreateProject(Project project)
         {
-            context.Add(project);
+
+            Project projectCleaned = new Project
+            {
+                ProjectName = project.ProjectName,
+                Description = project.Description,
+                UserId = project.UserId
+            };
+            context.Add(projectCleaned);
             return Save();
         }
 

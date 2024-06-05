@@ -2,6 +2,7 @@ using TimeTrackingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using TimeTrackingApp.Repository;
 using TimeTrackingApp.Interfaces;
+using TimeTrackingApp.Results;
 
 namespace TimeTrackingApp.Controllers
 {
@@ -18,23 +19,20 @@ namespace TimeTrackingApp.Controllers
             this.userRepository = userRepository;
         }
         
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-        public IActionResult GetUsers()
-        {
-            var users = userRepository.GetUsers();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return Ok(users);
-        }
-
-        [HttpGet("{userId}")]
+        [HttpGet()]
         [ProducesResponseType(200, Type = typeof(User))]
         [ProducesResponseType(400)]
-        public IActionResult GetUser(int userId)
-      {
+        public IActionResult GetUser()
+        {
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+
         try
         {
             if (!userRepository.UserExists(userId))
@@ -64,11 +62,19 @@ namespace TimeTrackingApp.Controllers
         }
       }
 
-        [HttpGet("{userId}/projects")]
+        [HttpGet("projects")]
         [ProducesResponseType(200, Type = typeof(Project[]))]
         [ProducesResponseType(400)]
-        public IActionResult GetUserProjects(int userId)
+        public IActionResult GetUserProjects()
         {
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
             try
             {
                 if (!userRepository.UserExists(userId))
@@ -104,7 +110,8 @@ namespace TimeTrackingApp.Controllers
         [ProducesResponseType(400)]
        public IActionResult CreateUser([FromBody] User createUser)
     {
-        try
+            //TODO: REMOVE no longer need to create users with api endpoint
+            try
         {
             if (createUser == null)
             {
@@ -124,12 +131,12 @@ namespace TimeTrackingApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!userRepository.CreateUser(createUser))
+            if (userRepository.CreateUser(createUser).IsFailure)
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
             }
-
+            //can get user from CreateUser function now instead of making another db call
             var newUser = userRepository.GetUser(createUser.UserId);
             return Ok(newUser);
         }
@@ -143,22 +150,31 @@ namespace TimeTrackingApp.Controllers
     }
 
 
-        [HttpPut("{UserID}")]
+        [HttpPut()]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateUser(int userId, [FromBody] User updatedUser)
+        public IActionResult UpdateUser( [FromBody] User updatedUser)
     {
-        try
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
+            string userName = loggedInUser.Value.UserName;
+            try
         {
             if (updatedUser == null)
             {
                 return BadRequest("Updated user data is null.");
             }
 
-            if (userId != updatedUser.UserId)
+            if (userName != updatedUser.UserName)
             {
-                ModelState.AddModelError("", "User ID in the URL does not match the ID in the request body.");
+                ModelState.AddModelError("", "The UserName from your accesss token does not match the username in the request body.");
                 return BadRequest(ModelState);
             }
 
@@ -190,12 +206,20 @@ namespace TimeTrackingApp.Controllers
     }
 
 
-        [HttpDelete("{UserID}")]
+        [HttpDelete()]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-       public IActionResult DeleteUser(int userId)
+       public IActionResult DeleteUser()
         {
+            Result<User> loggedInUser = GetLoggedInUser();
+            if (loggedInUser.IsFailure)
+            {
+                Console.WriteLine($"An error occurred: No logged in user? Should not have been able to get through the middleware");
+
+                return StatusCode(401, "Unauthorised - but you got through the middlware - must be hacking");
+            }
+            int userId = loggedInUser.Value.UserId;
             try
             {
                 if (!userRepository.UserExists(userId))
@@ -232,6 +256,15 @@ namespace TimeTrackingApp.Controllers
             }
         }
 
+        private Result<User> GetLoggedInUser()
+        {
+            var loggedInUser = HttpContext.Items["loggedInUser"] as User;
+
+            if (loggedInUser is null)
+                return Result.Fail<User>(new ValidationError("Could Not Determine Logged In User. This would be 401 - but you got through the middlware - must be hacking"));
+
+            return Result.Ok(loggedInUser);
+        }
     }
 }
 
