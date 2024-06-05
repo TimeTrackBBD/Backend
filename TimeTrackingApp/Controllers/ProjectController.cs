@@ -255,7 +255,7 @@ namespace TimeTrackingApp.Controllers
                 {
                     return NotFound(); 
                 }
-                if (projectToDelete.UserId == userId)
+                if (projectToDelete.UserId != userId)
                 {
                     return StatusCode(401, "Unauthorised.");
                 }
