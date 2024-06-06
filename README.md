@@ -1,6 +1,6 @@
 # TimeTrack API
 
-The TimeTrack API is built in C# and serves as the backend for the TimeTrack web application. This API allows users to create and manage projects and track the time spent on tasks within each project.The api can be accessed at: `https://api.timetrack.projects.bbdgrad.com` and `https://api.timetrack.projects.bbdgrad.com/swagger` to see the avaliable endpoints.
+The TimeTrack API is built in C# and serves as the backend for the TimeTrack web application. This API allows users to create and manage projects and track the time spent on tasks within each project.The api can be accessed at: https://api.timetrack.projects.bbdgrad.com and https://api.timetrack.projects.bbdgrad.com/swagger to see the avaliable endpoints.
 
 ## Getting Started
 
