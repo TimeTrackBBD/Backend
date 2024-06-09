@@ -153,8 +153,7 @@ namespace TimeTrackingApp.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            var newProject = projectRepository.GetProject(createProject.ProjectId);
-            return Ok(newProject);
+            return Ok();
         }
         catch (Exception ex)
         {

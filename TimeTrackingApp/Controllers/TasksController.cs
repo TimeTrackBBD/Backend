@@ -125,8 +125,7 @@ namespace TimeTrackingApp.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            var newTask = taskRepository.GetTask(createTask.TaskId);
-            return Ok(newTask);
+            return Ok();
         }
         catch (Exception ex)
         {
